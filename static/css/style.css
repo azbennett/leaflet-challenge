@@ -8,26 +8,57 @@ body,
 html {
   height: 100%;
 }
-
-
 .legend {
-  background-color: white;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  font-family: Arial, sans-serif;
-  line-height: 18px;
   color: #555;
+  padding: 6px 8px;
+  font: 12px Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  background: white;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
 }
-
-.legend i {
-  width: 18px;
-  height: 18px;
-  float: left;
-  margin-right: 8px;
-  opacity: 0.8;
-}
-
-.legend br {
+.legend ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
   clear: both;
+}
+.legend li {
+  font-size: 15px;
+  display: inline-block;
+  width: 30px;
+  height: 22px;
+}
+.legend .min {
+  float: left;
+  padding-bottom: 5px;
+}
+.legend .max {
+  float: right;
+}
+.legend-item {
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+
+.legend-color-bar {
+    width: 20px;
+    height: 10px;
+    margin-right: 5px;
+  }
+
+.legend-label {
+    font-size: 15px;
+    font-weight: bold;
+    align-items: center;
+    line-height: 10px;
+  }
+
+.legend-title {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 5px;
 }

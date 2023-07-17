@@ -1,18 +1,11 @@
 // Store the API endpoint as queryUrl.
-let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_week.geojson";
+let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson";
 
 // Perform a GET request to the query URL.
 d3.json(queryUrl).then(function (data) {
   // Once we get a response, send the data.features object to the createFeatures function.
   createFeatures(data.features);
 });
-
-function createFeatures(earthquakeData) {
-  // Define a function that we want to run once for each feature in the features array.
-  // Give each feature a popup that describes the place and time of the earthquake.
-  function onEachFeature(feature, layer) {
-    layer.bindPopup(`<h3>${feature.properties.place}</h3><hr><p>${new Date(feature.properties.time)}</p>`);
-  }
 
   // Define a function to determine the circle size based on the magnitude.
   function getCircleSize(magnitude) {
@@ -47,6 +40,14 @@ function createFeatures(earthquakeData) {
       return "#ff5f65";
     }
   }
+
+function createFeatures(earthquakeData) {
+  // Define a function that we want to run once for each feature in the features array.
+  // Give each feature a popup that describes the place and time of the earthquake.
+  function onEachFeature(feature, layer) {
+    layer.bindPopup(`<h3>${feature.properties.place}<p>Magnitude: ${feature.properties.mag}<p>Link: <a href="${feature.properties.url}"target="_blank">Click for details</a></h3><hr><p>${new Date(feature.properties.time)}</p>`);
+  }
+
 
   // Create a GeoJSON layer that contains the features array on the earthquakeData object.
   // Run the onEachFeature function once for each piece of data in the array.
@@ -113,18 +114,23 @@ function createMap(earthquakes) {
     let div = L.DomUtil.create("div", "legend");
     let magnitudes = [0, 1, 3, 5, 7, 9];
     let labels = [];
-
+  
+    let title = '<div class="legend-title">Magnitude Scale</div>';
+    labels.push(title);
+  
     for (let i = 0; i < magnitudes.length; i++) {
+      let color = getCircleColor(magnitudes[i] + 0.1);
+      let label = magnitudes[i] + (magnitudes[i + 1] ? "&ndash;" + magnitudes[i + 1] : "+");
+  
       labels.push(
-        '<i style="background:' +
-        getCircleColor(magnitudes[i] + 0.1) +
-        '"></i> ' +
-        magnitudes[i] +
-        (magnitudes[i + 1] ? "&ndash;" + magnitudes[i + 1] : "+")
+        '<div class="legend-item">' +
+          '<div class="legend-color-bar" style="background-color:' + color + '"></div>' +
+          '<div class="legend-label">' + label + '</div>' +
+        '</div>'
       );
     }
-
-    div.innerHTML = labels.join("<br>");
+  
+    div.innerHTML = labels.join("");
     return div;
   };
 
