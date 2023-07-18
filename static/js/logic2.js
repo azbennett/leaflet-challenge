@@ -1,13 +1,20 @@
 // Store the API endpoint as queryUrl.
-let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson";
+let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+/* 
+https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson
+https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson
+https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson
+https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_week.geojson
+https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson 
+*/
+
 
 // Perform a GET request to the query URL.
 d3.json(queryUrl).then(function (data) {
-  // Once we get a response, send the data.features object to the createFeatures function.
   createFeatures(data.features);
 });
 
-  // Define a function to determine the circle size based on the magnitude.
+  //determine size by nested if else 
   function getCircleSize(magnitude) {
     if (magnitude < 1) {
       return 5;
@@ -24,17 +31,17 @@ d3.json(queryUrl).then(function (data) {
     }
   }
 
-  // Define a function to determine the circle color based on the magnitude.
-  function getCircleColor(magnitude) {
-    if (magnitude < 1) {
+  //determine color by nested if else
+  function getCircleColor(depth) {
+    if (depth <= 10) {
       return "#a3f600";
-    } else if (magnitude < 3) {
+    } else if (depth <= 30) {
       return "#dcf400";
-    } else if (magnitude < 5) {
+    } else if (depth <= 50) {
       return "#f7db11";
-    } else if (magnitude < 7) {
+    } else if (depth <= 70) {
       return "#fdb72a";
-    } else if (magnitude < 9) {
+    } else if (depth <= 90) {
       return "#fca35d";
     } else {
       return "#ff5f65";
@@ -42,21 +49,25 @@ d3.json(queryUrl).then(function (data) {
   }
 
 function createFeatures(earthquakeData) {
-  // Define a function that we want to run once for each feature in the features array.
-  // Give each feature a popup that describes the place and time of the earthquake.
+  //adds my pop up details
   function onEachFeature(feature, layer) {
-    layer.bindPopup(`<h3>${feature.properties.place}<p>Magnitude: ${feature.properties.mag}<p>Link: <a href="${feature.properties.url}"target="_blank">Click for details</a></h3><hr><p>${new Date(feature.properties.time)}</p>`);
+    layer.bindPopup(`
+      <h3>${feature.properties.place}
+      <p>Magnitude: ${feature.properties.mag}
+      <p>Depth: ${feature.geometry.coordinates[2]} km
+      <p>Link: <a href="${feature.properties.url}"target="_blank">Click for details</a>
+      </h3>
+      <hr><p>${new Date(feature.properties.time)}</p>
+      `
+    );
   }
 
-
-  // Create a GeoJSON layer that contains the features array on the earthquakeData object.
-  // Run the onEachFeature function once for each piece of data in the array.
   let earthquakes = L.geoJSON(earthquakeData, {
     pointToLayer: function (feature, latlng) {
-      // Create a circle marker for each earthquake feature.
+      //uses my 2 previous functions for each data point
       return L.circleMarker(latlng, {
         radius: getCircleSize(feature.properties.mag),
-        fillColor: getCircleColor(feature.properties.mag),
+        fillColor: getCircleColor(feature.geometry.coordinates[2]),
         color: "#000",
         weight: 1,
         opacity: 1,
@@ -100,39 +111,48 @@ function createMap(earthquakes) {
     layers: [street, earthquakes]
   });
 
-  // Create a layer control.
-  // Pass it the baseMaps and overlayMaps.
-  // Add the layer control to the map.
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
 
-  // Create a legend.
+  //my legend.
   let legend = L.control({ position: "bottomright" });
 
+  //set up variables/location
   legend.onAdd = function (map) {
     let div = L.DomUtil.create("div", "legend");
-    let magnitudes = [0, 1, 3, 5, 7, 9];
+    //let magnitudes = [0, 1, 3, 5, 7, 9];
+    let depths = [10, 30, 50, 70, 90];
     let labels = [];
   
-    let title = '<div class="legend-title">Magnitude Scale</div>';
-    labels.push(title);
-  
-    for (let i = 0; i < magnitudes.length; i++) {
-      let color = getCircleColor(magnitudes[i] + 0.1);
-      let label = magnitudes[i] + (magnitudes[i + 1] ? "&ndash;" + magnitudes[i + 1] : "+");
-  
-      labels.push(
-        '<div class="legend-item">' +
-          '<div class="legend-color-bar" style="background-color:' + color + '"></div>' +
-          '<div class="legend-label">' + label + '</div>' +
-        '</div>'
-      );
-    }
-  
-    div.innerHTML = labels.join("");
-    return div;
-  };
+  // Add the legend title
+  let title = '<div class="legend-title">Depth Scale</div>';
+  labels.push(title);
 
+  for (let i = 0; i < depths.length; i++) {
+    let color = getCircleColor(depths[i]);
+    let label = (i === 0 ? "< " : depths[i - 1] + " - ") + depths[i] + " km";
+
+    labels.push(
+      '<div class="legend-item">' +
+        '<div class="legend-color-bar" style="background-color:' + color + '"></div>' +
+        '<div class="legend-label">' + label + '</div>' +
+      '</div>'
+    );
+  }
+
+  // Add the last legend entry for depths greater than the last value in the depths array
+  let lastColor = getCircleColor(depths[depths.length - 1] + 0.1);
+  let lastLabel = "≥ " + depths[depths.length - 1] + " km";
+  labels.push(
+    '<div class="legend-item">' +
+      '<div class="legend-color-bar" style="background-color:' + lastColor + '"></div>' +
+      '<div class="legend-label">' + lastLabel + '</div>' +
+    '</div>'
+  );
+
+  div.innerHTML = labels.join("");
+  return div;
+};
   legend.addTo(myMap);
 }
