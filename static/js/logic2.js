@@ -101,7 +101,12 @@ function createMap(earthquakes) {
 
   // Create an overlay object to hold our overlay.
   let overlayMaps = {
-    Earthquakes: earthquakes
+    Earthquakes: earthquakes,
+    1.0: EQ_onepoint,
+    2.5: EQ_twopointfive,
+    4.5: EQ_fourpointfive,
+    All_Earthquakes: EQ_all,
+    Significant_Only: EQ_sig
   };
 
   // Create the map, giving it the streetmap and earthquakes layers to display on load.
