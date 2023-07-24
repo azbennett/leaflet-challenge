@@ -1,12 +1,11 @@
-// Store the API endpoint as queryUrl.
+//Choose your data source set:
+
+//let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson";
+//let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson";
+//let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson";
+//let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_week.geojson";
 let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
-/* 
-https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson
-https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson
-https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson
-https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_week.geojson
-https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson 
-*/
+
 
 
 // Perform a GET request to the query URL.
@@ -17,17 +16,17 @@ d3.json(queryUrl).then(function (data) {
   //determine size by nested if else 
   function getCircleSize(magnitude) {
     if (magnitude < 1) {
-      return 5;
+      return 3;
     } else if (magnitude < 3) {
-      return 10;
+      return 7;
     } else if (magnitude < 5) {
       return 15;
     } else if (magnitude < 7) {
-      return 20;
-    } else if (magnitude < 9) {
       return 25;
-    } else {
+    } else if (magnitude < 9) {
       return 30;
+    } else {
+      return 40;
     }
   }
 
@@ -125,7 +124,7 @@ function createMap(earthquakes) {
     let depths = [10, 30, 50, 70, 90];
     let labels = [];
   
-  // Add the legend title
+  //legend title
   let title = '<div class="legend-title">Depth Scale</div>';
   labels.push(title);
 
@@ -141,8 +140,8 @@ function createMap(earthquakes) {
     );
   }
 
-  // Add the last legend entry for depths greater than the last value in the depths array
-  let lastColor = getCircleColor(depths[depths.length - 1] + 0.1);
+  //after the for loop runs we add the final 'if greater than or equal to' legend item ">"
+  let lastColor = getCircleColor(depths[depths.length]);
   let lastLabel = "≥ " + depths[depths.length - 1] + " km";
   labels.push(
     '<div class="legend-item">' +
