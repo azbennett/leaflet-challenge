@@ -4,9 +4,7 @@
 //let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson";
 //let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson";
 //let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_week.geojson";
-let queryUrl ="https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
-//let queryUrl ="https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson"
-//let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
 
 
@@ -16,13 +14,13 @@ d3.json(queryUrl).then(function (data) {
 });
 
   //determine size by nested if else 
-  function getCircleSize(magnitude) {  // size gets larger and larger as the magnitude grows.
+  function getCircleSize(magnitude) {
     if (magnitude < 1) {
       return 3;
     } else if (magnitude < 3) {
       return 7;
     } else if (magnitude < 5) {
-      return 10;
+      return 15;
     } else if (magnitude < 7) {
       return 25;
     } else if (magnitude < 9) {
@@ -33,28 +31,21 @@ d3.json(queryUrl).then(function (data) {
   }
 
   //determine color by nested if else
-	function getCircleColor(depth) {
-	  if (depth <= 5) {
-		return "#ff5f65"; // Red color for shallow depth. These can be more dangerous/damaging
-	  } else if (depth <= 10) {
-		return "#f78987";
-	  } else if (depth <= 20) {
-		return "#fca35d";
-	  } else if (depth <= 30) {
-		return "#fdb72a";
-	  } else if (depth <= 40) {
-		return "#f7db11";
-	  } else if (depth <= 50) {
-		return "#dcf400";
-	  } else if (depth <= 70) {
-		return "#a3f600";
-	  } else if (depth <= 90) {
-		return "#6cc644";
-	  } else {
-		return "#1f8f1f"; // Light green color for deeper depths where it is less likely to have an impact
-	  }
-	}
-
+  function getCircleColor(depth) {
+    if (depth <= 10) {
+      return "#a3f600";
+    } else if (depth <= 30) {
+      return "#dcf400";
+    } else if (depth <= 50) {
+      return "#f7db11";
+    } else if (depth <= 70) {
+      return "#fdb72a";
+    } else if (depth <= 90) {
+      return "#fca35d";
+    } else {
+      return "#ff5f65";
+    }
+  }
 
 function createFeatures(earthquakeData) {
   //adds my pop up details
@@ -129,7 +120,8 @@ function createMap(earthquakes) {
   //set up variables/location
   legend.onAdd = function (map) {
     let div = L.DomUtil.create("div", "legend");
-	let depths = [5, 10, 20, 30, 40, 50, 70, 90];
+    //let magnitudes = [0, 1, 3, 5, 7, 9];
+    let depths = [10, 30, 50, 70, 90];
     let labels = [];
   
   //legend title
